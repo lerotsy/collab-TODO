@@ -3,15 +3,29 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from models.models import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo-app.db'
+app.config['JWT_SECRET_KEY'] = 'mysecretkey'
 
 db.init_app(app)
 migrate = Migrate(app, db)
 
+jwt = JWTManager(app)
+
 from models.models import User, ToDoList
 
+
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.json.get('username', None)
+    password = request.json.get('password', None)
+    user = User.query.filter_by(username=username).first()
+    if user and check_password_hash(user.password_hash, password):
+        access_token = create_access_token(identity=username)
+        return jsonify(access_token=access_token)
+    return jsonify({"msg": "Bad username or password"}), 401
 
 @app.route('/')
 def home():
@@ -32,7 +46,6 @@ def get_todolists():
 
 @app.route('/users', methods=['POST'])
 def create_user():
-    breakpoint()
     data = request.json
     if not data or 'username' not in data or 'password' not in data:
         abort(400, 'Username and password are required.')
