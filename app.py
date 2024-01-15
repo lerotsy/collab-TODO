@@ -1,13 +1,16 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from models.todo_list import ToDoList
+# from models.todo_list import ToDoList
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo-app.db'
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+from models import user, todo_list
+
 
 @app.route('/')
 def home():
