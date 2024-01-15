@@ -2,20 +2,15 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from models.models import db
-# from werkzeug.security import generate_password_hash, check_password_hash
-# from models.todo_list import ToDoList
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo-app.db'
 
-# db = SQLAlchemy(app)
 db.init_app(app)
 migrate = Migrate(app, db)
 
 from models.models import User, ToDoList
-# from models import user, todo_list
-# from models.user import User
-# from models.todo_list import ToDoList
 
 
 @app.route('/')
@@ -37,6 +32,7 @@ def get_todolists():
 
 @app.route('/users', methods=['POST'])
 def create_user():
+    breakpoint()
     data = request.json
     if not data or 'username' not in data or 'password' not in data:
         abort(400, 'Username and password are required.')
