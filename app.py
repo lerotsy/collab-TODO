@@ -1,7 +1,7 @@
+from models.models import db, User, ToDoList, Task, TaskStatus
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from models.models import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from datetime import datetime
@@ -15,8 +15,6 @@ migrate = Migrate(app, db)
 
 jwt = JWTManager(app)
 
-from models.models import User, ToDoList, Task, TaskStatus
-
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -28,9 +26,11 @@ def login():
         return jsonify(access_token=access_token)
     return jsonify({"msg": "Bad username or password"}), 401
 
+
 @app.route('/')
 def home():
     return 'Hello, World!'
+
 
 @app.route('/todolists', methods=['POST'])
 @jwt_required()
@@ -41,18 +41,20 @@ def create_todolist():
     db.session.commit()
     return jsonify({'id': new_list.id}), 201
 
+
 @app.route('/todolists', methods=['GET'])
 @jwt_required()
 def get_todolists():
     lists = ToDoList.query.all()
     return jsonify([{'id': lst.id, 'title': lst.title} for lst in lists]), 200
 
+
 @app.route('/users', methods=['POST'])
 def create_user():
     data = request.json
     if not data or 'username' not in data or 'password' not in data:
         abort(400, 'Username and password are required.')
-    
+
     # Check if user already exists
     if User.query.filter_by(username=data['username']).first():
         abort(400, 'Username already exists.')
@@ -63,15 +65,18 @@ def create_user():
     db.session.commit()
     return jsonify({'id': new_user.id, 'username': new_user.username}), 201
 
+
 @app.route('/users', methods=['GET'])
 def get_users():
     users = User.query.all()
     return jsonify([{'id': user.id, 'username': user.username} for user in users]), 200
 
+
 @app.route('/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
     user = User.query.get_or_404(user_id)
     return jsonify({'id': user.id, 'username': user.username}), 200
+
 
 @app.route('/users/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
@@ -83,12 +88,14 @@ def update_user(user_id):
     db.session.commit()
     return jsonify({'id': user.id, 'username': user.username}), 200
 
+
 @app.route('/users/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
     user = User.query.get_or_404(user_id)
     db.session.delete(user)
     db.session.commit()
     return jsonify({'message': 'User deleted'}), 200
+
 
 @app.route('/tasks', methods=['POST'])
 @jwt_required()
@@ -105,6 +112,7 @@ def create_task():
     db.session.commit()
     return jsonify({'id': new_task.id}), 201
 
+
 @app.route('/tasks/<int:task_id>', methods=['PUT'])
 @jwt_required()
 def update_task(task_id):
@@ -118,7 +126,5 @@ def update_task(task_id):
     return jsonify({'id': task.id, 'description': task.description, 'status': task.status.name}), 200
 
 
-
 if __name__ == '__main__':
     app.run(debug=True)
-
