@@ -33,6 +33,7 @@ def home():
     return 'Hello, World!'
 
 @app.route('/todolists', methods=['POST'])
+@jwt_required()
 def create_todolist():
     data = request.json
     new_list = ToDoList(title=data['title'], user_id=data.get('user_id'))
@@ -41,6 +42,7 @@ def create_todolist():
     return jsonify({'id': new_list.id}), 201
 
 @app.route('/todolists', methods=['GET'])
+@jwt_required()
 def get_todolists():
     lists = ToDoList.query.all()
     return jsonify([{'id': lst.id, 'title': lst.title} for lst in lists]), 200
@@ -89,6 +91,7 @@ def delete_user(user_id):
     return jsonify({'message': 'User deleted'}), 200
 
 @app.route('/tasks', methods=['POST'])
+@jwt_required()
 def create_task():
     data = request.get_json()
     new_task = Task(
@@ -103,6 +106,7 @@ def create_task():
     return jsonify({'id': new_task.id}), 201
 
 @app.route('/tasks/<int:task_id>', methods=['PUT'])
+@jwt_required()
 def update_task(task_id):
     task = Task.query.get_or_404(task_id)
     data = request.get_json()
