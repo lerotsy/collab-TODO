@@ -1,5 +1,13 @@
 # from app import db
 from flask_sqlalchemy import SQLAlchemy
+import enum
+
+
+class TaskStatus(enum.Enum):
+    NEW = 'new'
+    STARTED = 'started'
+    COMPLETED = 'completed'
+
 
 db = SQLAlchemy()
 
@@ -29,7 +37,8 @@ class ToDoList(db.Model):
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.Text, nullable=False)
-    completed = db.Column(db.Boolean, default=False)
+    status = db.Column(db.Enum(TaskStatus), default=TaskStatus.NEW)
+    due_date = db.Column(db.DateTime)
     list_id = db.Column(db.Integer, db.ForeignKey('to_do_list.id'), nullable=False)
 
     def __repr__(self):
