@@ -1,9 +1,11 @@
-from models.models import db, User, ToDoList, Task, TaskStatus
+from models.models import db, User, ToDoList
+from models.models import Task, TaskStatus, Permission, shared_lists
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager, create_access_token
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
 
 app = Flask(__name__)
@@ -124,6 +126,53 @@ def update_task(task_id):
     task.due_date = data.get('due_date', task.due_date)
     db.session.commit()
     return jsonify({'id': task.id, 'description': task.description, 'status': task.status.name}), 200
+
+
+@app.route('/share_todo_list', methods=['POST'])
+@jwt_required()
+def share_todo_list():
+    current_user_username = get_jwt_identity()
+    data = request.get_json()
+    list_id = data.get('list_id')
+    share_with_username = data.get('share_with_username')
+    permission = data.get('permission', 'READ').upper()
+
+    # Find current user
+    current_user = User.query.filter_by(username=current_user_username).first()
+    if not current_user:
+        return jsonify({'message': 'Current user not found'}), 404
+
+    # Find the list to share
+    todo_list = ToDoList.query.get(list_id)
+    if not todo_list or todo_list.user_id != current_user.id:
+        return jsonify({'message': 'ToDo list not found or not owned by the user'}), 403
+
+    # Find the user to share with
+    user_to_share_with = User.query.filter_by(
+        username=share_with_username).first()
+    if not user_to_share_with:
+        return jsonify({'message': 'User to share with not found'}), 404
+
+    # Check if the list is already shared with the user
+    is_already_shared = db.session.query(shared_lists).filter_by(
+        user_id=user_to_share_with.id,
+        list_id=list_id
+    ).first() is not None
+
+    if is_already_shared:
+        return jsonify(
+            {'message': 'ToDo list already shared with this user'}), 400
+
+    # Share the list
+    new_shared_list = shared_lists.insert().values(
+        user_id=user_to_share_with.id,
+        list_id=list_id,
+        permissions=Permission[permission]
+    )
+    db.session.execute(new_shared_list)
+    db.session.commit()
+
+    return jsonify({'message': f'ToDo list shared with {share_with_username} with {permission.lower()} permission'}), 200
 
 
 if __name__ == '__main__':
