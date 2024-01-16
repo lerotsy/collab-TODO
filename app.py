@@ -9,10 +9,11 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
 from blueprints.auth import auth_blueprint
 from blueprints.todo import todo_blueprint
+from config import DevelopmentConfig
+
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo-app.db'
-app.config['JWT_SECRET_KEY'] = 'mysecretkey'
+app.config.from_object(DevelopmentConfig)
 
 app.register_blueprint(auth_blueprint)
 app.register_blueprint(todo_blueprint)
