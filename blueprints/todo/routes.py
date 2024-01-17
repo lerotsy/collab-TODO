@@ -25,6 +25,11 @@ def get_todolists():
     lists = ToDoList.query.all()
     return jsonify([{'id': lst.id, 'title': lst.title} for lst in lists]), 200
 
+@todo_blueprint.route('/todolists/<int:list_id>', methods=['GET'])
+def get_todolist(list_id):
+    list = ToDoList.query.get_or_404(list_id)
+    return jsonify({'id': list.id, 'title': list.title}), 200
+
 
 @todo_blueprint.route('/users', methods=['POST'])
 def create_user():
