@@ -16,7 +16,7 @@ def create_todolist():
     new_list = ToDoList(title=data['title'], user_id=data.get('user_id'))
     db.session.add(new_list)
     db.session.commit()
-    return jsonify({'id': new_list.id}), 201
+    return jsonify({'id': new_list.id, 'title': new_list.title}), 201
 
 
 @todo_blueprint.route('/todolists', methods=['GET'])
