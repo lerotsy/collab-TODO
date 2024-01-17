@@ -42,3 +42,14 @@ class ToDoTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('Test ToDo List', response.get_json()['title'])
 
+    def test_update_todolist(self):
+        response = self.client.put(f'/todolists/{self.test_todo_list.id}', 
+                                   json={'title': 'Updated ToDo List'},
+                                   headers={'Authorization': f'Bearer {self.token}'})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Updated ToDo List', response.get_json()['title'])
+
+    def test_delete_todolist(self):
+        response = self.client.delete(f'/todolists/{self.test_todo_list.id}',
+                                      headers={'Authorization': f'Bearer {self.token}'})
+        self.assertEqual(response.status_code, 200)

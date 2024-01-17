@@ -45,6 +45,17 @@ def update_todolist(list_id):
     db.session.commit()
     return jsonify({'id': todolist.id, 'title': todolist.title}), 200
 
+@jwt_required()
+@todo_blueprint.route('/todolists/<int:list_id>', methods=['DELETE'])
+def delete_todo_list(list_id):
+    todolist = db.session.get(ToDoList, list_id)
+    if todolist is None:
+        abort(404)
+    db.session.delete(todolist)
+    db.session.commit()
+    return jsonify({'message': 'Todo list deleted'}), 200
+
+
 @todo_blueprint.route('/users', methods=['POST'])
 def create_user():
     data = request.json

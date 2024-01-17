@@ -9,6 +9,7 @@ from . import auth_blueprint
 def login():
     username = request.json.get('username', None)
     password = request.json.get('password', None)
+    # breakpoint()
     user = User.query.filter_by(username=username).first()
     if user and check_password_hash(user.password_hash, password):
         access_token = create_access_token(identity=username)
