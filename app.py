@@ -12,17 +12,20 @@ from blueprints.todo import todo_blueprint
 from config import DevelopmentConfig
 
 
-app = Flask(__name__)
-app.config.from_object(DevelopmentConfig)
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(DevelopmentConfig)
 
-app.register_blueprint(auth_blueprint)
-app.register_blueprint(todo_blueprint)
+    app.register_blueprint(auth_blueprint)
+    app.register_blueprint(todo_blueprint)
 
-db.init_app(app)
-migrate = Migrate(app, db)
+    db.init_app(app)
+    migrate = Migrate(app, db)
 
-jwt = JWTManager(app)
+    jwt = JWTManager(app)
+    return app
 
 
 if __name__ == '__main__':
+    app = create_app()
     app.run(debug=True)
