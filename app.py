@@ -9,20 +9,26 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
 from blueprints.auth import auth_blueprint
 from blueprints.todo import todo_blueprint
-from config import DevelopmentConfig
+from config import DevelopmentConfig, ProductionConfig, TestingConfig
 
 
-def create_app():
+def create_app(config_name='dev'):
     app = Flask(__name__)
-    app.config.from_object(DevelopmentConfig)
+    if config_name == 'prod':
+        app.config.from_object(ProductionConfig)
+    elif config_name == 'test':
+        app.config.from_object(TestingConfig)
+    else:
+        app.config.from_object(DevelopmentConfig)
 
     app.register_blueprint(auth_blueprint)
     app.register_blueprint(todo_blueprint)
+    # breakpoint()
 
     db.init_app(app)
-    migrate = Migrate(app, db)
+    Migrate(app, db)
+    JWTManager(app)
 
-    jwt = JWTManager(app)
     return app
 
 

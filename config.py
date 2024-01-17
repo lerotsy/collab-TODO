@@ -1,5 +1,7 @@
 import os
 from datetime import timedelta
+from dotenv import load_dotenv
+load_dotenv()
 
 
 class Config(object):
@@ -12,6 +14,13 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     DEBUG = True
+
+class TestingConfig(Config):
+    TESTING = True
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
+    SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
 
 
 class ProductionConfig(Config):
