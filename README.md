@@ -7,7 +7,7 @@ This project is a Flask-based API for a shareable todo list application. It allo
 - User authentication.
 - CRUD operations for todo lists and tasks.
 - Sharing todo lists with different permissions.
-- *Upcoming Feature*: Real-time notifications on updates using WebSockets.
+- *Upcoming Feature*: Real-time notifications on updates.
 
 
 ## API Endpoints
@@ -31,15 +31,9 @@ This project is a Flask-based API for a shareable todo list application. It allo
 - `POST /share_todo_list`: Share a todo list with another user.
 
 ## Future Enhancements
-We plan to implement a real-time notification system using WebSockets. This will allow users to receive immediate updates whenever a shared todo list is modified.
+- I plan to add a real-time notification system. This will allow users to receive updates whenever a shared todo list is modified.
+- I am currently working on the frontend aspect of this project using React JS.
 
-## Contributing
-Contributions are welcome. Please fork the repository and submit a pull request with your changes.
 
-## License
-This project is licensed under [Your License Here].
-
-## Contact
-For any queries or feedback, please contact [Your Contact Information].
 
 

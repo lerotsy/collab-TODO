@@ -1,9 +1,7 @@
 from models.models import db, User, ToDoList
 from models.models import Task, TaskStatus, Permission, shared_lists
 from flask import Flask, request, jsonify, abort
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
 from . import todo_blueprint
