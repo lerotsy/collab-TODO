@@ -10,10 +10,12 @@ from datetime import datetime
 from blueprints.auth import auth_blueprint
 from blueprints.todo import todo_blueprint
 from config import DevelopmentConfig, ProductionConfig, TestingConfig
+from flask_cors import CORS
 
 
 def create_app(config_name='dev'):
     app = Flask(__name__)
+    CORS(app)
     if config_name == 'prod':
         app.config.from_object(ProductionConfig)
     elif config_name == 'test':
