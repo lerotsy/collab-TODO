@@ -30,6 +30,11 @@ This project is a Flask-based API for a shareable todo list application. It allo
 ### Sharing
 - `POST /share_todo_list`: Share a todo list with another user.
 
+## Testing
+Unit tests have been written for the various API endpoints to ensure reliability and proper functioning. These tests can be run using the following command:
+
+`$ python -m unittest discover -s tests`
+
 ## Future Enhancements
 - I plan to add a real-time notification system. This will allow users to receive updates whenever a shared todo list is modified.
 - I am currently working on the frontend aspect of this project using React JS.
