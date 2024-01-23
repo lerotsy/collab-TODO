@@ -16,7 +16,10 @@ def login():
     if user and check_password_hash(user.password_hash, password):
         access_token = create_access_token(identity=username)
         return jsonify(access_token=access_token)
-    return jsonify({"msg": "Bad username or password"}), 401
+    response = jsonify({"msg": "Bad username or password"})
+    response.status_code = 401
+    response.headers['Content-Type'] = 'application/json'
+    return response
 
 
 @auth_blueprint.route('/users', methods=['POST'])

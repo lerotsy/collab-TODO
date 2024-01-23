@@ -20,6 +20,19 @@ def create_todolist():
 @todo_blueprint.route('/todolists', methods=['GET'])
 @jwt_required()
 def get_todolists():
+    current_username = get_jwt_identity()
+    user = User.query.filter_by(username=current_username).first()
+    if not user:
+        return jsonify({"msg": "User not found"}), 404
+
+    # Filter ToDoList items by user_id
+    lists = ToDoList.query.filter_by(user_id=user.id).all()
+    return jsonify([{'id': lst.id, 'title': lst.title} for lst in lists]), 200
+
+
+@todo_blueprint.route('/all-todolists', methods=['GET'])
+@jwt_required()
+def get_all_todolists():
     lists = ToDoList.query.all()
     return jsonify([{'id': lst.id, 'title': lst.title} for lst in lists]), 200
 
