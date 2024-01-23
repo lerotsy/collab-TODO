@@ -16,7 +16,9 @@ def create_todolist():
     Returns the created ToDoList with its ID and title.
     """
     data = request.json
-    new_list = ToDoList(title=data['title'], user_id=data.get('user_id'))
+    user_id = get_jwt_identity()
+    # breakpoint()
+    new_list = ToDoList(title=data['title'], user_id=user_id)
     db.session.add(new_list)
     db.session.commit()
     return jsonify({'id': new_list.id, 'title': new_list.title}), 201
