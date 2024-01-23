@@ -10,6 +10,11 @@ from . import todo_blueprint
 @todo_blueprint.route('/todolists', methods=['POST'])
 @jwt_required()
 def create_todolist():
+    """
+    Create a new ToDoList.
+    Requires JSON input with 'title' and optionally 'user_id'.
+    Returns the created ToDoList with its ID and title.
+    """
     data = request.json
     new_list = ToDoList(title=data['title'], user_id=data.get('user_id'))
     db.session.add(new_list)
@@ -20,6 +25,10 @@ def create_todolist():
 @todo_blueprint.route('/todolists', methods=['GET'])
 @jwt_required()
 def get_todolists():
+    """
+    Retrieve all ToDoList items associated with the current authenticated user.
+    Returns a list of ToDoList items including their IDs and titles.
+    """
     current_username = get_jwt_identity()
     user = User.query.filter_by(username=current_username).first()
     if not user:
@@ -33,12 +42,22 @@ def get_todolists():
 @todo_blueprint.route('/all-todolists', methods=['GET'])
 @jwt_required()
 def get_all_todolists():
+    """
+    Retrieve all ToDoList items from the database.
+    Returns a list of all ToDoList items including their IDs and titles.
+    This route does not filter by user and is intended for administrative purposes.
+    """
     lists = ToDoList.query.all()
     return jsonify([{'id': lst.id, 'title': lst.title} for lst in lists]), 200
 
 @jwt_required()
 @todo_blueprint.route('/todolists/<int:list_id>', methods=['GET'])
 def get_todolist(list_id):
+    """
+    Retrieve a specific ToDoList by its ID.
+    The route parameter 'list_id' specifies the ID of the ToDoList to retrieve.
+    Returns the ToDoList item including its ID and title.
+    """
     list = db.session.get(ToDoList, list_id)
     if list is None:
         abort(404, 'User does not exist')
@@ -48,6 +67,12 @@ def get_todolist(list_id):
 @jwt_required()
 @todo_blueprint.route('/todolists/<int:list_id>', methods=['PUT'])
 def update_todolist(list_id):
+    """
+    Update the title of an existing ToDoList.
+    Requires JSON input with the new 'title'.
+    The route parameter 'list_id' specifies the ID of the ToDoList to update.
+    Returns the updated ToDoList item including its ID and title.
+    """
     todolist = db.session.get(ToDoList, list_id)
     if todolist is None:
         abort(404, 'User does not exist')
@@ -71,6 +96,11 @@ def delete_todo_list(list_id):
 @todo_blueprint.route('/tasks', methods=['POST'])
 @jwt_required()
 def create_task():
+    """
+    Create a new task associated with a ToDoList.
+    Requires JSON input with 'description', 'status', 'due_date', and 'list_id'.
+    Returns the created Task with its ID.
+    """
     data = request.get_json()
     new_task = Task(
         description=data['description'],
@@ -87,6 +117,12 @@ def create_task():
 @todo_blueprint.route('/tasks/<int:task_id>', methods=['PUT'])
 @jwt_required()
 def update_task(task_id):
+    """
+    Update details of an existing task.
+    Requires JSON input with 'description', 'status', and 'due_date'.
+    The route parameter 'task_id' specifies the ID of the Task to update.
+    Returns the updated Task details including its ID, description, and status.
+    """
     task = Task.query.get_or_404(task_id)
     data = request.get_json()
     task.description = data.get('description', task.description)
@@ -100,6 +136,12 @@ def update_task(task_id):
 @todo_blueprint.route('/share_todo_list', methods=['POST'])
 @jwt_required()
 def share_todo_list():
+    """
+    Share a ToDoList with another user.
+    Requires JSON input with 'list_id', 'share_with_username', and 'permission'.
+    Validates the ownership of the ToDoList before sharing.
+    Returns a confirmation message upon successful sharing.
+    """
     current_user_username = get_jwt_identity()
     data = request.get_json()
     list_id = data.get('list_id')
