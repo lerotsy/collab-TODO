@@ -14,7 +14,7 @@ def login():
     # breakpoint()
     user = User.query.filter_by(username=username).first()
     if user and check_password_hash(user.password_hash, password):
-        access_token = create_access_token(identity=username)
+        access_token = create_access_token(identity=user.id)
         return jsonify(access_token=access_token)
     response = jsonify({"msg": "Bad username or password"})
     response.status_code = 401

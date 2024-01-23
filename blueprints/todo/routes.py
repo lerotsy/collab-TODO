@@ -29,13 +29,10 @@ def get_todolists():
     Retrieve all ToDoList items associated with the current authenticated user.
     Returns a list of ToDoList items including their IDs and titles.
     """
-    current_username = get_jwt_identity()
-    user = User.query.filter_by(username=current_username).first()
-    if not user:
-        return jsonify({"msg": "User not found"}), 404
+    user_id = get_jwt_identity()
 
     # Filter ToDoList items by user_id
-    lists = ToDoList.query.filter_by(user_id=user.id).all()
+    lists = ToDoList.query.filter_by(user_id=user_id).all()
     return jsonify([{'id': lst.id, 'title': lst.title} for lst in lists]), 200
 
 
