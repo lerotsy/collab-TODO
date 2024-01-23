@@ -8,6 +8,7 @@ This project is a Flask-based API for a shareable todo list application. It allo
 - CRUD operations for todo lists and tasks.
 - Sharing todo lists with different permissions.
 - *Upcoming Feature*: Real-time notifications on updates.
+- *Upcoming Feature*: Addition of a description field to the ToDoList model, enabling it to function as a shareable document similar to Google Docs.
 
 
 ## API Endpoints
