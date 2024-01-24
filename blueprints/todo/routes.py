@@ -68,8 +68,6 @@ def get_todolist(list_id):
 def update_todolist(list_id):
     """
     Update the title of an existing ToDoList.
-    Requires JSON input with the new 'title'.
-    The route parameter 'list_id' specifies the ID of the ToDoList to update.
     Returns the updated ToDoList item including its ID and title.
     """
     todolist = db.session.get(ToDoList, list_id)
@@ -97,8 +95,6 @@ def delete_todo_list(list_id):
 def create_task():
     """
     Create a new task associated with a ToDoList.
-    Requires JSON input with 'description', 'status', 'due_date', and 'list_id'.
-    Returns the created Task with its ID.
     """
     data = request.get_json()
     new_task = Task(
@@ -110,7 +106,10 @@ def create_task():
     )
     db.session.add(new_task)
     db.session.commit()
-    return jsonify({'id': new_task.id}), 201
+    return jsonify({
+        'id': new_task.id,
+        'description': new_task.description,
+        }), 201
 
 
 @todo_blueprint.route('/tasks/<int:task_id>', methods=['PUT'])
@@ -118,8 +117,6 @@ def create_task():
 def update_task(task_id):
     """
     Update details of an existing task.
-    Requires JSON input with 'description', 'status', and 'due_date'.
-    The route parameter 'task_id' specifies the ID of the Task to update.
     Returns the updated Task details including its ID, description, and status.
     """
     task = Task.query.get_or_404(task_id)
@@ -137,24 +134,17 @@ def update_task(task_id):
 def share_todo_list():
     """
     Share a ToDoList with another user.
-    Requires JSON input with 'list_id', 'share_with_username', and 'permission'.
-    Validates the ownership of the ToDoList before sharing.
-    Returns a confirmation message upon successful sharing.
+    Returns a confirmation message upon successful sharing
+    or an error status code with a message explaining the reason.
     """
-    current_user_username = get_jwt_identity()
+    user_id = get_jwt_identity()
     data = request.get_json()
     list_id = data.get('list_id')
     share_with_username = data.get('share_with_username')
     permission = data.get('permission', 'READ').upper()
 
-    # Find current user
-    current_user = User.query.filter_by(username=current_user_username).first()
-    if not current_user:
-        return jsonify({'message': 'Current user not found'}), 404
-
-    # Find the list to share
     todo_list = ToDoList.query.get(list_id)
-    if not todo_list or todo_list.user_id != current_user.id:
+    if not todo_list or todo_list.user_id != user_id:
         return jsonify({'message': 'ToDo list not found or not owned by the user'}), 403
 
     # Find the user to share with
